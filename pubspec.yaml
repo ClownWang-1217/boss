@@ -20,6 +20,8 @@ dependencies:
   #audio_recorder: ^0.0.6
   audio_recorder2: ^1.0.3
   audioplayer: ^0.5.2
+  dio: ^2.1.7
+  json_annotation: ^0.2.3
   flutter:
     sdk: flutter
     

@@ -50,7 +50,7 @@ class _CompanyPageState extends State<CompanyPage> {
                       ),
                       new FlatButton(
                         onPressed: _isRecording ? _stop : null,
-                        child: new Text("Stop"),
+                        child: new Text("Stop"), 
                         color: Colors.red,
                       ),
                       new FlatButton(

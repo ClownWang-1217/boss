@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-
+import '../../http/HttpManager.dart';
+import 'dart:convert';
 class PostPage extends StatefulWidget {
   PostPage({Key key}) : super(key: key);
 
@@ -9,26 +11,20 @@ class PostPage extends StatefulWidget {
 class _PostPageState extends State<PostPage> {
 
   ScrollController _scrollController = new ScrollController();
-  List<String> _SWidget = new List<String>();
-  List<String> _AddTSWidget = new List<String>();
-  List<String> _AddBSWidget = new List<String>();
+  List<String> sWidget = new List<String>();
+  List<String> sWidgetImg = new List<String>();
+
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
-    for (var i = 0; i < 10; i++) {
-      _SWidget.add('moren'+i.toString());
-      _AddTSWidget.add('value+++++++++');
-      _AddBSWidget.add('value--------');
-    }
-    
+    super.initState(); 
     _scrollController.addListener((){
-      print(_scrollController.position.pixels.toString() + '\n');
-        print((_scrollController.position.maxScrollExtent).toString() + '\n');
+      //print(_scrollController.position.pixels.toString() + '\n');
+       // print((_scrollController.position.maxScrollExtent).toString() + '\n');
       if(_scrollController.position.pixels == _scrollController.position.maxScrollExtent )
       {
-        print(_scrollController.position.pixels.toString() + '\n');
-        print((_scrollController.position.maxScrollExtent).toString() + '\n');
+        //print(_scrollController.position.pixels.toString() + '\n');
+       // print((_scrollController.position.maxScrollExtent).toString() + '\n');
         _GetMoreData();
       }
     });
@@ -47,7 +43,7 @@ class _PostPageState extends State<PostPage> {
         body:RefreshIndicator(
           child: ListView.builder(
             physics: const BouncingScrollPhysics(),
-            itemCount: _SWidget.length,
+            itemCount: sWidgetImg.length,   
             itemBuilder: (context, index) {
               return Card(
                 child: Padding(
@@ -55,8 +51,8 @@ class _PostPageState extends State<PostPage> {
                   child:Card(
                     
                   child: ListTile(
-                  leading: Image.asset('images/01.jpg'),
-                  title: Text(_SWidget[index]) ,
+                  leading: Image.asset('images/${sWidgetImg[index]}'),
+                  title: Text(sWidget[index]),
                 ),
                 borderOnForeground: true,
                 clipBehavior: Clip.hardEdge,
@@ -66,26 +62,40 @@ class _PostPageState extends State<PostPage> {
             },
             controller: _scrollController
           ),
-          onRefresh: _Refresh,
+          onRefresh: _refresh,
         ));
   }
 
- 
-  Future<Null> _Refresh() async{
-    await Future.delayed(Duration(seconds: 3), () {
-      setState(() {
-        return _SWidget.addAll(_AddTSWidget);
+  Response response;
+  Future<Null> _refresh() async{
+    HttpManager.Get('/Post', (data){
+
+    final responseJson = json.decode(data);
+    List<Map<dynamic,dynamic>> newData = responseJson;
+    newData.forEach((value){
+      Map<dynamic,dynamic> tMap = value;
+      tMap.forEach((k,v){
+        sWidget.insert(0,k);
+        sWidgetImg.insert(0,v);
       });
+
+      
     });
+    setState(() {
+      
+    });
+    },errorCallBack: (errorMsg1){
+      print('error:'+errorMsg1);
+    });
+    
+
+
 
   
   }
+
    Future<Null> _GetMoreData() async{
-    await Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        return _SWidget.addAll(_AddBSWidget);
-      });
-    });
+ 
 
   
   }
