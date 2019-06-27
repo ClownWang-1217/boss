@@ -4,14 +4,14 @@ import 'package:dio/dio.dart';
 
 
 
-enum HttpMethod {
-  GET,
-  POST,
-}
+// enum HttpMethod {
+//   GET,
+//   POST,
+// }
 
 
 
-
+typedef HttpCallback = void Function(String data);
 class HttpManager{
 
   static const String GET = "get";
@@ -31,22 +31,21 @@ class HttpManager{
   //   }
   //   return _instance;
   // }
-
   
   //get请求
-  static void Get(String path, Function callBack,{Map<String, String> params, Function errorCallBack}) async 
+  static void Get(String path, HttpCallback callBack,{Map<String, String> params, Function errorCallBack}) async 
   {
     _request(baseUrl + path, callBack,method: GET, params: params, errorCallBack: errorCallBack);
   }
 
   //post请求
-  static void Post(String path, Function callBack,{Map<String, String> params, Function errorCallBack}) async 
+  static void Post(String path, HttpCallback callBack,{Map<String, String> params, Function errorCallBack}) async 
   {
     _request(path, callBack,method: POST, params: params, errorCallBack: errorCallBack);
   }
 
 
-static void _request(String url, Function callBack,{String method,Map<String, String> params,Function errorCallBack}) async 
+static void _request(String url, HttpCallback callBack,{String method,Map<String, String> params,Function errorCallBack}) async 
 {
     print("<net> url :<" + method + ">" + url);
 

@@ -21,7 +21,10 @@ dependencies:
   audio_recorder2: ^1.0.3
   audioplayer: ^0.5.2
   dio: ^2.1.7
-  json_annotation: ^0.2.3
+  json_annotation: ^2.3.0
+  flutter_socket_io: ^0.4.7
+  web_socket_channel: ^1.0.13
+  json_serializable: ^3.0.0
   flutter:
     sdk: flutter
     
@@ -33,7 +36,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  build_runner: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
