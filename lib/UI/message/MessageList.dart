@@ -2,98 +2,194 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import './MessageInfo.dart';
+import '../../audio/AudioManager.dart';
+import 'package:audioplayer/audioplayer.dart';
 
-enum MessageCallType {
-  send,
-  recv,
-}
 
 class MessageList extends StatefulWidget {
-  final MessageCallType _MessageType;
-  MessageList(_MessageType)
-      : this._MessageType = _MessageType ?? MessageCallType.recv;
-
-  _MessageListState createState() => _MessageListState(_MessageType);
+  
+  final MessageInfo msgInfo;
+  MessageList(this.msgInfo);
+  _MessageListState createState() => _MessageListState();
 }
 
 class _MessageListState extends State<MessageList> {
-  final MessageCallType _MessageType;
-  _MessageListState(this._MessageType);
   @override
   Widget build(BuildContext context) {
-    return _SingleMessage(_MessageType);
+    return _singleMessage();
   }
 
-  Widget _SingleMessage(MessageCallType Type) {
-    Widget _Widget;
-    switch (Type) {
-      case MessageCallType.recv:
-        _Widget = Container(
-          margin: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Row(
-            children: <Widget>[
-              Container(
-                  width: 50.0,
-                  height: 50.0,
-                  margin: const EdgeInsets.only(right: 10.0),
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage('images/wechat1.jpg'),
-                  )),
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-                  color: Colors.green[300],
-                  child: Text(
-                      '2018年11月1日 - 我们经常说,Flutter 里面所有的东西都是 Widget,所以,布局也是 Widget。 控件Container 可以让我们设置一个控件的尺寸、背景、margin 等: class TestW...'),
-                  constraints: BoxConstraints(maxWidth: 200.0),
-                ),
+  Widget _singleMessage() {
+    Widget _widget;
+    switch (widget.msgInfo.orientationType) {
+      case orientation.RECV:
+        {
+          if (widget.msgInfo.contentType == messageContentType.TEXT) {
+            _widget = Container(
+              margin: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                      width: 50.0,
+                      height: 50.0,
+                      margin: const EdgeInsets.only(right: 10.0),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('images/wechat2.jpg'),
+                      )),
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                      color: Colors.green[300],
+                      child: Text((widget.msgInfo as TextMessage).text),
+                      constraints: BoxConstraints(maxWidth: 200.0),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: 200.0,
+                      height: 20.0,
+                    ),
+                  ),
+                ],
               ),
-              Expanded(
-                child: Container(
-                  width: 200.0,
-                  height: 20.0,
-                ),
-              ),
-            ],
-          ),
-        );
-        break;
+            );
+          } else if (widget.msgInfo.contentType == messageContentType.VOICE) {
+            _widget = Container(
+              margin: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                      width: 50.0,
+                      height: 50.0,
+                      margin: const EdgeInsets.only(right: 10.0),
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('images/wechat2.jpg'),
+                      )),
+                  GestureDetector(
+                    onTap: () {
+                      print((widget.msgInfo as VoiceMessage));
+                      AudioManager().play((widget.msgInfo as VoiceMessage).path);
 
-      case MessageCallType.send:
-        _Widget = Container(
-          margin: const EdgeInsets.symmetric(vertical: 10.0),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  width: 100.0,
-                  height: 20.0,
-                ),
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                        color: Colors.green[300],
+                        child: Row(
+                          //语音消息图标 + 秒数 + 语音
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Icon(Icons.record_voice_over),
+                            Text('${(widget.msgInfo as VoiceMessage).countTime}″')
+                          ],
+                        ),
+                        width: (widget.msgInfo as VoiceMessage).countTime*1000/60,
+                        constraints: BoxConstraints(maxWidth: 200.0,minWidth: 60.0),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      width: 200.0,
+                      height: 20.0,
+                    ),
+                  ),
+                ],
               ),
-              ClipRRect(
-                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-                  color: Colors.white,
-                  child: Text('里面所有的东西都是 Widget,所以,布局也是 Widget。 控件Container '),
-                  constraints: BoxConstraints(maxWidth: 200.0),
-                ),
+            );
+          }
+
+          break;
+        }
+      case orientation.SEND:
+        {
+          if (widget.msgInfo.contentType == messageContentType.TEXT) {
+            _widget = Container(
+              margin: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      width: 100.0,
+                      height: 20.0,
+                    ),
+                  ),
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                      color: Colors.white,
+                      child: Text((widget.msgInfo as TextMessage).text),
+                      constraints: BoxConstraints(maxWidth: 200.0),
+                    ),
+                  ),
+                  Container(
+                      margin: const EdgeInsets.only(left: 10.0),
+                      width: 50.0,
+                      height: 50.0,
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('images/wechat1.jpg'),
+                      )),
+                ],
               ),
-              Container(
-                  margin: const EdgeInsets.only(left: 10.0),
-                  width: 50.0,
-                  height: 50.0,
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage('images/wechat3.jpg'),
-                  )),
-            ],
-          ),
-        );
-        break;
+            );
+          } else if (widget.msgInfo.contentType == messageContentType.VOICE) {
+            _widget = Container(
+              margin: const EdgeInsets.symmetric(vertical: 10.0),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      width: 100.0,
+                      height: 20.0,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      AudioManager().play((widget.msgInfo as VoiceMessage).path);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                        color: Colors.white,
+                        child: Row(
+                          //语音消息图标 + 秒数 + 语音
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('${(widget.msgInfo as VoiceMessage).countTime}″'),
+                            Icon(Icons.record_voice_over),
+                          ],
+                        ),
+                       width: (widget.msgInfo as VoiceMessage).countTime*1000/60,
+                        constraints: BoxConstraints(maxWidth: 200.0,minWidth: 60.0),
+                      ),
+                    ),
+                  ),
+                  Container(
+                      margin: const EdgeInsets.only(left: 10.0),
+                      width: 50.0,
+                      height: 50.0,
+                      child: CircleAvatar(
+                        backgroundImage: AssetImage('images/wechat1.jpg'),
+                      )),
+                ],
+              ),
+            );
+          }
+
+          break;
+        }
+
       default:
     }
 
-    return _Widget;
+    return _widget;
   }
+
+
+  
 }
